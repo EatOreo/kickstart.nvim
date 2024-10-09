@@ -205,6 +205,21 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+local function getInitLuaPath()
+  local info = debug.getinfo(1, 'S')
+  local source = info.source
+
+  if source:sub(1, 1) == '@' then
+    return source:sub(2)
+  else
+    return nil
+  end
+end
+
+local function getParentFolder(file_path)
+  return file_path:match '(.*/)' or file_path:match '(.*\\)'
+end
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -307,6 +322,7 @@ require('lazy').setup({
       metals_config.settings = {
         showImplicitArguments = true,
         excludedPackages = { 'akka.actor.typed.javadsl', 'com.github.swagger.akka.javadsl' },
+        scalafmtConfigPath = getParentFolder(getInitLuaPath()) .. '/scala/.scalafmt.conf',
       }
 
       -- *READ THIS*
@@ -788,6 +804,8 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
+        omnisharp = {},
+        ts_ls = {},
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
