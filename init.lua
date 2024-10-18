@@ -38,6 +38,16 @@ vim.opt.cursorline = true
 
 vim.opt.scrolloff = 10
 
+function TextMode()
+  vim.opt.background = 'light'
+  vim.cmd 'colo quiet'
+  vim.opt.linebreak = true
+  vim.keymap.set('n', 'j', 'gj', { noremap = true, silent = true })
+  vim.keymap.set('n', 'k', 'gk', { noremap = true, silent = true })
+  vim.keymap.set('v', 'j', 'gj', { noremap = true, silent = true })
+  vim.keymap.set('v', 'k', 'gk', { noremap = true, silent = true })
+end
+
 -- [[ Basic Keymaps ]]
 
 -- Clear highlights on search when pressing <Esc> in normal mode
