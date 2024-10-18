@@ -33,9 +33,7 @@ vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 vim.opt.inccommand = 'split'
-
 vim.opt.cursorline = true
-
 vim.opt.scrolloff = 10
 
 function TextMode()
@@ -47,6 +45,23 @@ function TextMode()
   vim.keymap.set('v', 'j', 'gj', { noremap = true, silent = true })
   vim.keymap.set('v', 'k', 'gk', { noremap = true, silent = true })
 end
+
+function ChangeSelected()
+  local start_pos = vim.fn.getpos "'<"
+  local end_pos = vim.fn.getpos "'>"
+  local selected_text = vim.fn.getline(start_pos[2], end_pos[2])
+  if #selected_text == 1 then
+    selected_text[1] = string.sub(selected_text[1], start_pos[3], end_pos[3])
+  else
+    selected_text[1] = string.sub(selected_text[1], start_pos[3])
+    selected_text[#selected_text] = string.sub(selected_text[#selected_text], 1, end_pos[3])
+  end
+  local search_text = table.concat(selected_text, '\n')
+  search_text = vim.fn.escape(search_text, "\\/.*'$^~[]")
+  vim.fn.setreg('/', search_text)
+end
+vim.keymap.set('v', '<C-d>', ':lua ChangeSelected()<CR> cgn', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-d>', '* cgn', { noremap = true, silent = true })
 
 -- [[ Basic Keymaps ]]
 
@@ -848,7 +863,6 @@ require('lazy').setup({
           -- Think of <c-l> as moving to the right of your snippet expansion.
           --  So if you have a snippet that's like:
           --  function $name($args)
-          --    $body
           --  end
           --
           -- <c-l> will move you to the right of each of the expansion locations.
