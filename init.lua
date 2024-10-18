@@ -46,8 +46,23 @@ function TextMode()
   vim.keymap.set('v', 'k', 'gk', { noremap = true, silent = true })
 end
 
+function ChangeSelected()
+  local start_pos = vim.fn.getpos "'<"
+  local end_pos = vim.fn.getpos "'>"
+  local selected_text = vim.fn.getline(start_pos[2], end_pos[2])
+  if #selected_text == 1 then
+    selected_text[1] = string.sub(selected_text[1], start_pos[3], end_pos[3])
+  else
+    selected_text[1] = string.sub(selected_text[1], start_pos[3])
+    selected_text[#selected_text] = string.sub(selected_text[#selected_text], 1, end_pos[3])
+  end
+  local search_text = table.concat(selected_text, '\n')
+  search_text = vim.fn.escape(search_text, "\\/.*'$^~[]")
+  vim.fn.setreg('/', search_text)
+end
+vim.keymap.set('v', '<C-d>', ':lua ChangeSelected()<CR> cgn', { noremap = true, silent = true })
 vim.keymap.set('n', '<C-d>', 'viw"ay:let @/=@a<CR>cgn', { noremap = true, silent = true })
-vim.keymap.set('v', '<C-d>', '"ay:let @/=@a<CR>cgn', { noremap = true, silent = true })
+-- vim.keymap.set('v', '<C-d>', '"ay:let @/=@a<CR>cgn', { noremap = true, silent = true })
 
 -- [[ Basic Keymaps ]]
 
